@@ -1,4 +1,4 @@
-import { registerUser, getUserByEmail } from '../models/userModel.js';
+import { registerUser, getUserByEmail, getAllUsers } from '../models/userModel.js'; // Ensure getAllUsers is in the userModel
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 
@@ -42,4 +42,14 @@ export const login = async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: 'Server error' });
   }
+};
+
+// Get all users
+export const getUsers = (req, res) => {
+  getAllUsers((err, users) => {
+    if (err) {
+      return res.status(500).json({ error: 'Server error' });
+    }
+    res.status(200).json(users);
+  });
 };
