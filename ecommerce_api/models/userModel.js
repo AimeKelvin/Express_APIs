@@ -24,15 +24,3 @@ export const getUserByEmail = (email) => {
     });
   });
 };
-
-export const getAllUsers = () => {
-  return new Promise((resolve, reject) => {
-    const query = 'SELECT id, name, email FROM users';
-    db.query(query, (err, result) => {
-      if (err) {
-        reject(err);
-      }
-      resolve(result); // Return all user data
-    });
-  });
-};
