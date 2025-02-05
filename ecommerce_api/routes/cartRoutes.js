@@ -1,18 +1,16 @@
 import express from "express";
-import {
-  addCartItem,
-  fetchCartItems,
-  modifyCartItem,
-  deleteCartItem,
-  emptyCart,
+import { 
+  addToCartController, 
+  getCartController, 
+  removeFromCartController, 
+  clearCartController 
 } from "../controllers/cartController.js";
 
 const router = express.Router();
 
-router.post("/cart", addCartItem); // Add to cart
-router.get("/cart/:userId", fetchCartItems); // Get cart items
-router.put("/cart", modifyCartItem); // Update cart item quantity
-router.delete("/cart/:cartId", deleteCartItem); // Remove item from cart
-router.delete("/cart/user/:userId", emptyCart); // Clear cart
+router.post("/add", addToCartController); // Add item to cart
+router.get("/:user_id", getCartController); // Get user's cart
+router.delete("/remove/:id", removeFromCartController); // Remove item
+router.delete("/clear/:user_id", clearCartController); // Clear cart
 
 export default router;

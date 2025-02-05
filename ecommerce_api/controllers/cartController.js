@@ -1,63 +1,57 @@
-import {
-    addToCart,
-    getCartItems,
-    updateCartQuantity,
-    removeCartItem,
-    clearCart,
-  } from "../models/cartModel.js";
-  
-  // Add item to cart
-  export const addCartItem = async (req, res) => {
-    const { userId, productId, quantity } = req.body;
-    try {
-      await addToCart(userId, productId, quantity);
-      res.status(200).json({ message: "Item added to cart" });
-    } catch (error) {
-      res.status(500).json({ error: "Failed to add item to cart" });
+import { addToCart, getCartByUserId, removeFromCart, clearCart } from "../models/cartModel.js";
+
+// Add item to cart
+export const addToCartController = (req, res) => {
+  const { user_id, product_id, quantity } = req.body;
+
+  if (!user_id || !product_id || !quantity) {
+    return res.status(400).json({ error: "All fields are required" });
+  }
+
+  addToCart(user_id, product_id, quantity, (err, result) => {
+    if (err) {
+      console.error("Error adding to cart:", err);
+      return res.status(500).json({ error: "Failed to add item to cart" });
     }
-  };
-  
-  // Get user cart items
-  export const fetchCartItems = async (req, res) => {
-    const { userId } = req.params;
-    try {
-      const [cartItems] = await getCartItems(userId);
-      res.status(200).json(cartItems);
-    } catch (error) {
-      res.status(500).json({ error: "Failed to fetch cart items" });
+    res.status(201).json({ message: "Item added to cart", result });
+  });
+};
+
+// Get cart items
+export const getCartController = (req, res) => {
+  const { user_id } = req.params;
+
+  getCartByUserId(user_id, (err, results) => {
+    if (err) {
+      console.error("Error fetching cart:", err);
+      return res.status(500).json({ error: "Failed to fetch cart items" });
     }
-  };
-  
-  // Update cart item quantity
-  export const modifyCartItem = async (req, res) => {
-    const { cartId, quantity } = req.body;
-    try {
-      await updateCartQuantity(cartId, quantity);
-      res.status(200).json({ message: "Cart item updated" });
-    } catch (error) {
-      res.status(500).json({ error: "Failed to update cart item" });
+    res.status(200).json(results);
+  });
+};
+
+// Remove item from cart
+export const removeFromCartController = (req, res) => {
+  const { id } = req.params;
+
+  removeFromCart(id, (err, result) => {
+    if (err) {
+      console.error("Error removing cart item:", err);
+      return res.status(500).json({ error: "Failed to remove item from cart" });
     }
-  };
-  
-  // Remove cart item
-  export const deleteCartItem = async (req, res) => {
-    const { cartId } = req.params;
-    try {
-      await removeCartItem(cartId);
-      res.status(200).json({ message: "Cart item removed" });
-    } catch (error) {
-      res.status(500).json({ error: "Failed to remove cart item" });
+    res.status(200).json({ message: "Item removed from cart" });
+  });
+};
+
+// Clear entire cart
+export const clearCartController = (req, res) => {
+  const { user_id } = req.params;
+
+  clearCart(user_id, (err, result) => {
+    if (err) {
+      console.error("Error clearing cart:", err);
+      return res.status(500).json({ error: "Failed to clear cart" });
     }
-  };
-  
-  // Clear entire cart
-  export const emptyCart = async (req, res) => {
-    const { userId } = req.params;
-    try {
-      await clearCart(userId);
-      res.status(200).json({ message: "Cart cleared" });
-    } catch (error) {
-      res.status(500).json({ error: "Failed to clear cart" });
-    }
-  };
-  
+    res.status(200).json({ message: "Cart cleared" });
+  });
+};

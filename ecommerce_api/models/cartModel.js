@@ -1,40 +1,34 @@
-import db from "../config/db.js"; // Import your DB connection
+import db from "../config/db.js";
 
 // Add item to cart
-export const addToCart = async (userId, productId, quantity) => {
-  const sql = `
-    INSERT INTO cart (user_id, product_id, quantity) 
-    VALUES (?, ?, ?) 
+export const addToCart = (userId, productId, quantity, callback) => {
+  const query = `
+    INSERT INTO cart (user_id, product_id, quantity)
+    VALUES (?, ?, ?)
     ON DUPLICATE KEY UPDATE quantity = quantity + ?;
   `;
-  return db.query(sql, [userId, productId, quantity, quantity]);
+  db.query(query, [userId, productId, quantity, quantity], callback);
 };
 
 // Get cart items for a user
-export const getCartItems = async (userId) => {
-  const sql = `
-    SELECT c.id, p.name, p.price, p.image, c.quantity 
+export const getCartByUserId = (userId, callback) => {
+  const query = `
+    SELECT c.id, c.quantity, p.id AS product_id, p.name, p.price, p.image
     FROM cart c
     JOIN products p ON c.product_id = p.id
     WHERE c.user_id = ?;
   `;
-  return db.query(sql, [userId]);
+  db.query(query, [userId], callback);
 };
 
-// Update cart item quantity
-export const updateCartQuantity = async (cartId, quantity) => {
-  const sql = `UPDATE cart SET quantity = ? WHERE id = ?`;
-  return db.query(sql, [quantity, cartId]);
-};
-
-// Remove item from cart
-export const removeCartItem = async (cartId) => {
-  const sql = `DELETE FROM cart WHERE id = ?`;
-  return db.query(sql, [cartId]);
+// Remove an item from the cart
+export const removeFromCart = (cartId, callback) => {
+  const query = "DELETE FROM cart WHERE id = ?";
+  db.query(query, [cartId], callback);
 };
 
 // Clear cart for a user
-export const clearCart = async (userId) => {
-  const sql = `DELETE FROM cart WHERE user_id = ?`;
-  return db.query(sql, [userId]);
+export const clearCart = (userId, callback) => {
+  const query = "DELETE FROM cart WHERE user_id = ?";
+  db.query(query, [userId], callback);
 };
